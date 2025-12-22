@@ -1,0 +1,17 @@
+services:
+  magic-wand:
+    build: .
+    container_name: magic-wand
+    restart: unless-stopped
+    env_file:
+      - .env
+    devices:
+      # Host Port : Container Port
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    volumes:
+      - ./magic_server.py:/app/magic_server.py
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"   # Max size of one log file (10 Megabytes)
+        max-file: "2"

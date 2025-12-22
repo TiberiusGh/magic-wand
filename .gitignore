@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Docker
+.env
+
+server/devices.json
+devices.json
+
+# System
+.DS_Store
