@@ -38,13 +38,13 @@ This started as a way to make Christmas more magical for my spouse. I had two ES
 
 ### Stage 1: First Experiments
 
-![Two ESP boards - ESP32-C3 and regular ESP32](./.img/stage1-boards.jpg)
+![Two ESP boards - ESP32-C3 and regular ESP32](./.img/stage1-boards.JPG)
 
 First time actually using these boards. Spent hours getting them to communicate via ESP-NOW, learning about WiFi channels and the differences between ESP32 variants. Eventually got them talking to each other and then to my homeserver via WiFi.
 
 ### Stage 2: Breadboard Prototype
 
-![Breadboard with accelerometer](./.img/stage2-breadboard.jpg)
+![Breadboard with accelerometer](./.img/stage2-breadboard.JPG)
 
 Connected the MPU-6050 accelerometer to the ESP32-C3 on a breadboard. Still tethered to the computer via USB, but it worked.
 
@@ -54,11 +54,11 @@ Wave the breadboard, lights respond. Ridiculous looking, but proof the concept w
 
 ### Stage 3: Going Portable
 
-![Soldered accelerometer and ESP32-C3](./.img/stage3-soldered.jpg)
+![Soldered accelerometer and ESP32-C3](./.img/stage3-soldered.JPG)
 
 My first time soldering. Attached the MPU-6050 directly to the ESP32-C3 Supermini.
 
-![Final soldered assembly](./.img/stage3-final.jpg)
+![Final soldered assembly](./.img/stage3-final.JPG)
 
 I did't want to risk damaging the board by unsoldering the pre-installed headers, so I soldered the cables directly to the pins. To prevent short circuits in such a tight space, I bent the header pins in alternating directions (inward and outward) to maximize the space between connections.
 
@@ -66,7 +66,7 @@ The result is compact and surprisingly robust.
 
 ### Stage 4: Battery Power
 
-![Wand taped to batteries](./.img/stage4-batteries.jpg)
+![Wand taped to batteries](./.img/stage4-batteries.JPG)
 
 Taped it to batteries (elegance comes later). Now it's fully wireless and portable.
 
