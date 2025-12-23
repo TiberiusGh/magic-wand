@@ -1,6 +1,10 @@
 # Magic Wand IoT Project
 
+> **Status:** Spouse-Approved ✅
+
 Control smart plugs with a wave. Built to add a touch of magic to Christmas lights.
+
+![Magic Wand Demo GIF](./.img/hero-wand-demo.gif)
 
 ## What This Is
 
@@ -11,19 +15,19 @@ The system uses ESP-NOW for direct device communication, an MPU-6050 acceleromet
 ## Architecture
 
 ```
-┌─────────────┐                  ┌──────────────┐                 ┌─────────────┐
-│   Wand      │   ESP-NOW       │   Receiver   │     Serial      │   Python    │
-│  (ESP32-C3) │─────────────────▶│   Dongle     │────────────────▶│   Server    │
-│  + MPU-6050 │   Channel 13    │   (ESP32)    │   /dev/ttyUSB0  │             │
-└─────────────┘                  └──────────────┘                 └──────┬──────┘
-                                                                          │
-                                                                          │ TinyTuya
-                                                                          │ Local API
-                                                                          ▼
-                                                                   ┌─────────────┐
-                                                                   │  Tuya Plug  │
-                                                                   │   (Lights)  │
-                                                                   └─────────────┘
+graph LR
+    subgraph Wand [Wand (Sender)]
+        ESP32[ESP32-C3] -- I2C --> MPU[MPU-6050]
+        ESP32 -- "ESP-NOW (Ch 13)" --> Receiver
+    end
+
+    subgraph Server_Side [Server Side]
+        Receiver[Receiver Dongle] -- "Serial (USB)" --> Script[Python Script]
+        Script -- "TinyTuya (Local Network)" --> Plug[Smart Plug]
+    end
+
+    style Wand fill:#f9f,stroke:#333,stroke-width:2px
+    style Server_Side fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
 **Flow**: Wand detects motion → sends ESP-NOW packet → receiver forwards via serial → Python script on homeserver toggles plug
@@ -34,33 +38,35 @@ This started as a way to make Christmas more magical for my spouse. I had two ES
 
 ### Stage 1: First Experiments
 
-![Two ESP boards - ESP32-C3 and regular ESP32](./images/stage1-boards.jpg)
+![Two ESP boards - ESP32-C3 and regular ESP32](./.img/stage1-boards.jpg)
 
 First time actually using these boards. Spent hours getting them to communicate via ESP-NOW, learning about WiFi channels and the differences between ESP32 variants. Eventually got them talking to each other and then to my homeserver via WiFi.
 
 ### Stage 2: Breadboard Prototype
 
-![Breadboard with accelerometer](./images/stage2-breadboard.jpg)
+![Breadboard with accelerometer](./.img/stage2-breadboard.jpg)
 
 Connected the MPU-6050 accelerometer to the ESP32-C3 on a breadboard. Still tethered to the computer via USB, but it worked.
 
-![Demo of waving breadboard to control lights](./images/stage2-demo.gif)
+![Demo of waving breadboard to control lights](./.img/breadboard-demo.gif)
 
 Wave the breadboard, lights respond. Ridiculous looking, but proof the concept works.
 
 ### Stage 3: Going Portable
 
-![Soldered accelerometer and ESP32-C3](./images/stage3-soldered.jpg)
+![Soldered accelerometer and ESP32-C3](./.img/stage3-soldered.jpg)
 
 My first time soldering. Attached the MPU-6050 directly to the ESP32-C3 Supermini.
 
-![Final soldered assembly](./images/stage3-final.jpg)
+![Final soldered assembly](./.img/stage3-final.jpg)
+
+I did't want to risk damaging the board by unsoldering the pre-installed headers, so I soldered the cables directly to the pins. To prevent short circuits in such a tight space, I bent the header pins in alternating directions (inward and outward) to maximize the space between connections.
 
 The result is compact and surprisingly robust.
 
 ### Stage 4: Battery Power
 
-![Wand taped to batteries](./images/stage4-batteries.jpg)
+![Wand taped to batteries](./.img/stage4-batteries.jpg)
 
 Taped it to batteries (elegance comes later). Now it's fully wireless and portable.
 
@@ -94,11 +100,11 @@ GND    →    GND
 
 ESP-NOW allows direct peer-to-peer communication between ESP devices without a WiFi router. Perfect for low-latency control applications. Both devices must be on the same WiFi channel (13 in this project). Channel 13 was chosen because it's not allowed in the USA but permitted in Europe, resulting in low congestion and reliable communication.
 
-Initially, I tried having the receiver ESP32 communicate directly with the server over WiFi. However, the ESP32 uses a single chip for both WiFi and ESP-NOW, so it can't listen for ESP-NOW packets while sending WiFi commands. This caused missed messages. The solution was to keep the receiver connected to the homeserver via USB serial, which also reduced latency significantly.
+Initially, I tried having the receiver ESP32 communicate directly with the server over WiFi. However, the ESP32 uses a single chip for both WiFi and ESP-NOW, so it can't listen for ESP-NOW packets while sending WiFi commands. This caused missed messages. The solution was to connect the receiver to the homeserver via USB serial, this also reduced latency significantly.
 
 ### Deep Sleep & Power Optimization
 
-The wand consumes only 5-10µA while sleeping. It wakes on motion detection, sends the message, and immediately returns to sleep. This gives weeks of battery life. The boot count persists across sleep cycles using RTC memory.
+The wand consumes only 5-10µA while sleeping. It wakes on motion detection, sends the message, and immediately returns to sleep. This gives weeks of battery life.
 
 ### Motion Detection
 
@@ -166,19 +172,15 @@ cp .env.example .env
 
 Get Tuya credentials using the [TinyTuya setup wizard](https://github.com/jasonacox/tinytuya).
 
+> [!NOTE]
+> Getting local keys from Tuya requires a developer account. It takes about 10 minutes but is a one-time process. The TinyTuya wizard handles most of the heavy lifting.
+
 ### 4. Run the Server
 
-**Via Docker:**
+**Via Docker (recommended):**
 
 ```bash
 docker-compose up -d
-```
-
-**Or natively:**
-
-```bash
-pip install -r requirements.txt
-python magic_server.py
 ```
 
 ## Configuration
@@ -195,10 +197,8 @@ python magic_server.py
 
 - **Latency**: 100-200ms from wave to light toggle
 - **Range**: 10-20m line of sight
-- **Battery Life**: Weeks to months (usage dependent)
-- **Sleep Current**: 5-10µA
-- **Active Current**: ~80mA for ~100ms per wave
-- **Communication**: ESP-NOW on 2.4GHz WiFi
+- **Battery Life**: Weeks to months
+- **Communication**: ESP-NOW on 2.4GHz WiFi ↔ USB Serial (115200 baud)
 
 ## What I Learned
 
@@ -217,7 +217,7 @@ This project was a hands-on crash course in embedded IoT:
 
 ## Future Ideas
 
-- Web interface for configuration
+- Web interface for customization of automatic schedules
 - Gesture recognition (different waves for different actions)
 - 3D printed wand enclosure
 - Battery level monitoring and warnings
