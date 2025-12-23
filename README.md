@@ -14,20 +14,20 @@ The system uses ESP-NOW for direct device communication, an MPU-6050 acceleromet
 
 ## Architecture
 
-```
+```mermaid
 graph LR
-    subgraph Wand [Wand (Sender)]
+    subgraph Wand ["Wand (Sender)"]
         ESP32[ESP32-C3] -- I2C --> MPU[MPU-6050]
         ESP32 -- "ESP-NOW (Ch 13)" --> Receiver
     end
 
-    subgraph Server_Side [Server Side]
+    subgraph Server_Side ["Server Side"]
         Receiver[Receiver Dongle] -- "Serial (USB)" --> Script[Python Script]
         Script -- "TinyTuya (Local Network)" --> Plug[Smart Plug]
     end
 
-    style Wand fill:#f9f,stroke:#333,stroke-width:2px
-    style Server_Side fill:#bbf,stroke:#333,stroke-width:2px
+style Wand fill:#d4af37,stroke:#7a5c00,stroke-width:2px   %% gold
+style Server_Side fill:#7fb069,stroke:#355f2e,stroke-width:2px %% muted green
 ```
 
 **Flow**: Wand detects motion → sends ESP-NOW packet → receiver forwards via serial → Python script on homeserver toggles plug
