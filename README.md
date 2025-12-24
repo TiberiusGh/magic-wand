@@ -214,6 +214,7 @@ This project was a hands-on crash course in embedded IoT:
 - **Serial communication** - ESP-to-computer data forwarding
 - **Battery optimization** - Every microamp counts
 - **Soldering** - My first time, learned on this project
+- **Spouse Acceptance Factor (SAF)** - The ultimate stress test.
 
 ## Future Ideas
 
